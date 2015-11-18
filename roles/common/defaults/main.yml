@@ -1,0 +1,6 @@
+---
+
+  common_pi_user: scratch
+  common_global_config: /usr/share/images/hansemerkur
+  common_global_wallpaper_name: wallpaper.png
+  common_global_wallpaper_path: "{{ common_global_config }}/{{ common_global_wallpaper_name }}"

@@ -1,0 +1,95 @@
+---
+ - name: Update system
+   apt: update_cache=yes
+   apt: upgrade=dist
+
+   # password: "scratch"
+ - name: Add new user
+   user:
+     name={{ common_pi_user }}
+     groups=dialout,cdrom,audio,video,plugdev,games,users,input,netdev,spi,i2c,gpio,sudo
+     createhome=true
+     password="$6$rounds=100000$elWGoUITNY30tSkS$fYptr2XW7P2tlJIMp1B5QBOhXTxmU3o50hrRMK6te.ZV79PzFZk0YD2Oe19.R5FDXeQkvVLMYDUT1P1jblkpf/"
+     shell=/bin/bash
+
+   # file:
+   #   path="/home/{{ common_pi_user  }}/.ssh"
+   #   mode=0700
+   #   owner={{ common_pi_user }}
+   #   group={{ common_pi_user }}
+   #   state=directory
+ - name: Set ssh key for new user
+   authorized_key:
+     user={{ common_pi_user }}
+     key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDjhHGeQ5iw1CxHAH8sXT8QmOqL0JzfpVx4LPfwgoo5ahGzerhwfQ8GL2gs4Z2gPfnnEUnkyRxfORMyaS0GMZZlCVAjzS9jhDk/LPnR577OK+9vcoPjGtdcR0TOr2JQ6MoUUF5Q+Thoed/iBbenhrGsBnspL9HeqCijHP0GBezZnWzx6fggwTuUEFwEFIrVwV55eUS+7lBxqMGa2zsG1A+L/meYvkig+1BTqk9zHoQmcchigOAE9RTy56B9skFDqSF75nxQqoePBDGX0qadnxFnRrSde8rICRpA8pqDuacHS9VdXDjBWy+kujiOQX/CMrN04XrMdpY6bBlTvxkOedrV root@d8e09e32146b
+     "
+
+ - name: Set ssh key for root
+   authorized_key:
+     user=root
+     key="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDjhHGeQ5iw1CxHAH8sXT8QmOqL0JzfpVx4LPfwgoo5ahGzerhwfQ8GL2gs4Z2gPfnnEUnkyRxfORMyaS0GMZZlCVAjzS9jhDk/LPnR577OK+9vcoPjGtdcR0TOr2JQ6MoUUF5Q+Thoed/iBbenhrGsBnspL9HeqCijHP0GBezZnWzx6fggwTuUEFwEFIrVwV55eUS+7lBxqMGa2zsG1A+L/meYvkig+1BTqk9zHoQmcchigOAE9RTy56B9skFDqSF75nxQqoePBDGX0qadnxFnRrSde8rICRpA8pqDuacHS9VdXDjBWy+kujiOQX/CMrN04XrMdpY6bBlTvxkOedrV root@d8e09e32146b"
+
+
+ - name: Set autologin for user
+   copy:
+     src="lightdm.conf"
+     dest="/etc/lightdm/lightdm.conf"
+     mode=0644
+     owner=root
+     group=root
+
+ - name: Create config dirs for HanseMerkur files.
+   file:
+     path="/home/{{ common_pi_user  }}/.config/hm"
+     mode=0755
+     owner={{ common_pi_user }}
+     group={{ common_pi_user }}
+     state=directory
+   file:
+     path={{ common_global_config }}
+     mode=0755
+     owner=root
+     group=root
+     state=directory
+
+ - name: Copy wallpaper
+   copy:
+     src="wallpaper.png"
+     dest={{ common_global_wallpaper_path }}
+     mode=0644
+     owner=root
+     group=root
+
+ - name: Set wallpaper as default
+   template:
+     src="desktop-items-0.conf"
+     dest="/etc/xdg/pcmanfm/LXDE-pi/desktop-items-0.conf"
+     mode=0644
+     owner=root
+     group=root
+
+ - name: Set locale keyboard to de
+   copy:
+     src="keyboard"
+     dest="/etc/default/keyboard"
+     mode=0644
+     owner=root
+     group=root
+
+ - name: Set locale to de_DE
+   copy:
+     src="locale.gen"
+     dest="/etc/locale.gen"
+     mode=0644
+     owner=root
+     group=root
+   notify:
+     - generate locale
+
+ - name: Add users to sudoers file
+   template:
+     src="sudoers"
+     dest="/etc/sudoers"
+     mode=0440
+     owner=root
+     group=root

@@ -1,0 +1,6 @@
+---
+ - name: generate locale
+   command: "{{ item }}"
+   with_items:
+     - locale-gen
+     - update-locale LANG=de_DE.UTF-8
