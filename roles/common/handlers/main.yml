@@ -4,3 +4,5 @@
    with_items:
      - locale-gen
      - update-locale LANG=de_DE.UTF-8
+ - name: enable regenerate ssh service
+   service: name=regenerate-ssh.service enabled=yes

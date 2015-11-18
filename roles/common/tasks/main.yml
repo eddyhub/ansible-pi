@@ -12,6 +12,13 @@
      password="$6$rounds=100000$elWGoUITNY30tSkS$fYptr2XW7P2tlJIMp1B5QBOhXTxmU3o50hrRMK6te.ZV79PzFZk0YD2Oe19.R5FDXeQkvVLMYDUT1P1jblkpf/"
      shell=/bin/bash
 
+ # password: "pi@hansemerkur"
+ - name: change password of user named "pi"
+   user:
+     name=pi
+     password="$6$rounds=100000$2e9Y1mXg6k061jOX$P4JMhKWGAgKkvgp/9E3hcrT0QTEsMjAbLrUYOEOtpx7BItKHQrIFtfnWDr8mhA1fjv9bN9y1efRrKijcnvJ6C/"
+     shell=/bin/bash
+
    # file:
    #   path="/home/{{ common_pi_user  }}/.ssh"
    #   mode=0700
@@ -85,6 +92,24 @@
      group=root
    notify:
      - generate locale
+
+ - name: Copy regenerate ssh script
+   copy:
+     src="regenerate-ssh.sh"
+     dest="/etc/regenerate-ssh.sh"
+     mode=0750
+     owner=root
+     group=root
+
+ - name: Copy regenerate ssh service
+   copy:
+     src="regenerate-ssh.service"
+     dest="/etc/systemd/system/regenerate-ssh.service"
+     mode=0644
+     owner=root
+     group=root
+   notify:
+    - enable regenerate ssh service
 
  - name: Add users to sudoers file
    template:
